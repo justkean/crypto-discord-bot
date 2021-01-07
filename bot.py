@@ -39,7 +39,7 @@ async def on_ready():
 
 @client.command()
 async def prices(ctx):
-    response = requests.get(f"{api_base}bitcoin-cash,monero,ripple,ethereum,litecoin,bitcoin&vs_currencies={currency_name.lower()}")
+    response = requests.get(f"{api_base}bitcoin-cash,monero,ripple,ethereum,litecoin,bitcoin&vs_currencies={currency_name.lower()}") # Get all available coin IDs from: https://api.coingecko.com/api/v3/coins/list
 
     # If request wasn't successful, send error embed
     if (response.status_code != 200):
