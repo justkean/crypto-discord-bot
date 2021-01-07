@@ -37,5 +37,29 @@ async def send_error_embed(ctx, message):
 async def on_ready():
     print("Ready.")
 
+@client.command()
+async def prices(ctx):
+    response = requests.get(f"{api_base}bitcoin-cash,monero,ripple,ethereum,litecoin,bitcoin&vs_currencies={currency_name.lower()}")
+
+    # If request wasn't successful, send error embed
+    if (response.status_code != 200):
+        await send_error_embed(ctx, "Failed to fetch the latest cryptocurrency prices. Please try again later.")
+        return
+
+    # Load response as JSON
+    respJSON = json.loads(response.text)
+
+    embed = discord.Embed(title="Current crypto prices", description="Below are the prices of some of the most popular cryptocurrencies.", timestamp=datetime.utcnow(), color=bot_color)
+
+    # Add each coin from the response as a field in the final embed
+    for coin in respJSON:
+        coinName = coin.capitalize().replace("-", " ") # This will turn e.g. "bitcoin-cash" into "Bitcoin cash"
+        coinValue = respJSON[coin]['usd']
+
+        embed.add_field(name=coinName, value=f"```{currency_symbol}{coinValue} {currency_name}```", inline=True)
+
+    embed.set_footer(text=bot_footer_text, icon_url=bot_footer_icon)
+    await ctx.channel.send(embed=embed)
+
 # Start the bot
 client.run(bot_token)
